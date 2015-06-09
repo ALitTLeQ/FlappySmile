@@ -5,29 +5,28 @@ var mainState = {
         game.stage.backgroundColor = '#ffc';
         game.load.image('bird','assets/smile.png');
         game.load.image('pipe','assets/rock.png');
-        game.load.image('emptyHole','assets/empty.png');
     },
     create: function(){
         game.physics.startSystem(Phaser.Physics.ARCADE);
+
+        //Bird
         this.bird = this.game.add.sprite(100, 245, 'bird');
         game.physics.arcade.enable(this.bird);
         this.bird.body.gravity.y = 1000;
+
         var spaceKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         spaceKey.onDown.add(this.jump, this);
 
+        //Pipe
         this.pipes = game.add.group();
         this.pipes.enableBody = true;
         this.pipes.createMultiple(20, 'pipe');
 
-        this.emptyHoles = game.add.group();
-        this.emptyHoles.enableBody = true;
-        this.emptyHoles.createMultiple(8, 'emptyHole');
+        //每1.5秒產生一列pipe
+        this.timer = game.time.events.loop(1500, this.addRowOfPipes, this);
 
-
-        this.timer = game.time.events.loop
-            (1500, this.addRowOfPipes, this);
-        this.score = 0;
-        this.isPassFirstOne = false;
+        //顯示分數
+        this.score = -1;
         this.labelScore = game.add.text
             (20, 20, "0", {font:"30px Arial", fill:"#000"});
 
@@ -40,9 +39,6 @@ var mainState = {
 
         game.physics.arcade.overlap
         (this.bird, this.emptyHoles, this.hitHole, null, this);
-    },
-    hitHole: function(){
-        this.isPassFirstOne = true;
     },
     hitPipe: function(){
         if( this.bird.alive == false ) return;
@@ -63,42 +59,30 @@ var mainState = {
     restartGame: function(){
         game.state.start('main');
     },
-    addOnePipe: function(x, y, isEmpty){
-        if(!isEmpty)
-        {
-            var pipe = this.pipes.getFirstDead();
-            pipe.body.velocity.x = -200;
-            pipe.checkWorldBounds = true;
-            pipe.outOfBoundsKill = true;
-        }
-        else{
-            var hole = this.emptyHoles.getFirstDead();
-            hole.reset(x,y);
-            hole.body.velocity.x = -200;
-            hole.checkWorldBounds = true;
-            hole.outOfBoundsKill = true;
+    addOnePipe: function(x, y) {
+        var pipe = this.pipes.getFirstDead();
 
-        }
+        //設定pipe位置
+        pipe.reset(x, y);
+
+        //加上x方向速度
+        pipe.body.velocity.x = -200;
+
+        //移除越過邊界的pipe
+        pipe.checkWorldBounds = true;
+        pipe.outOfBoundsKill = true;
     },
-    addRowOfPipes: function(){
-        var hole = Math.floor(Math.random * 5) + 1;
+    addRowOfPipes: function() {
+        //隨機產生空洞
+        var hole = Math.floor(Math.random() * 5) + 1;
 
-        for( var i=0 ; i<8 ; i++ )
-        {
-            if(i != hole && i != hole +1)
-            {
-                this.addOnePipe(400, i * (500+10)+10, false);
-            }
-            else
-            {
-                this.addOnePipe(400, i * (50+10)+10, true);
-            }
-        }
-        if( this.isPassFirstOne )
-        {
-            this.score += 1;
-            this.labelScore.text = this.score;
-        }
+        //加上其他六個pipe
+        for (var i = 0; i < 8; i++)
+            if (i != hole && i != hole + 1)
+                this.addOnePipe(400, i * 60 + 10);
+
+        this.score += 1;
+        this.labelScore.text = this.score;
     }
 };
 
