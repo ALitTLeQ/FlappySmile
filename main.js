@@ -23,10 +23,14 @@ var mainState = {
         this.emptyHoles = game.add.group();
         this.emptyHoles.enableBody = true;
         this.emptyHoles.createMultiple(8, 'emptyHole');
-        his.labelScore = game.add.text(20, 20, "0", {font:"30px Arial", fill:"#000"});
 
-        this.timer = gmae.time.events.loop(1500, this.addRowOfPipes, this)
 
+        this.timer = game.time.events.loop
+            (1500, this.addRowOfPipes, this);
+        this.score = 0;
+        this.isPassFirstOne = false;
+        this.labelScore = game.add.text
+            (20, 20, "0", {font:"30px Arial", fill:"#000"});
 
     },
     update: function(){
