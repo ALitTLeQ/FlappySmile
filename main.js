@@ -3,10 +3,9 @@ var game = new Phaser.Game(400, 490, Phaser.AUTO, 'gameDiv');
 var mainState = {
     preload: function(){
         game.stage.backgroundColor = '#ffc';
-        game.load.image('brid','assets/smile.png');
+        game.load.image('bird','assets/smile.png');
         game.load.image('pipe','assets/rock.png');
         game.load.image('emptyHole','assets/empty.png');
-
     },
     create: function(){
         game.physics.startSystem(Phaser.Physics.ARCADE);
