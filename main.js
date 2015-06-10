@@ -1,13 +1,23 @@
-var game = new Phaser.Game(400, 490, Phaser.AUTO, 'gameDiv');
+var game = new Phaser.Game(400, 490, Phaser.AUTO, 'game');
 
 var mainState = {
     preload: function(){
         game.stage.backgroundColor = '#ffc';
         game.load.image('bird','assets/smile.png');
         game.load.image('pipe','assets/rock.png');
+        game.load.audio('pass', 'assets/pass.mp3');
+        game.load.audio('lose', 'assets/lose.mp3');
     },
     create: function(){
+        //顯示分數
+        this.score = -1;
+        this.labelScore = game.add.text
+        (180, 200, "0", {font:"100px Arial", fill:"#F25E5E"});
         game.physics.startSystem(Phaser.Physics.ARCADE);
+
+        //Sound
+        this.sound_pass = game.add.audio('pass');
+        this.sound_lose = game.add.audio('lose');
 
         //Bird
         this.bird = this.game.add.sprite(100, 245, 'bird');
@@ -16,6 +26,7 @@ var mainState = {
 
         var spaceKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         spaceKey.onDown.add(this.jump, this);
+        this.game.input.onDown.add(this.jump, this);
 
         //Pipe
         this.pipes = game.add.group();
@@ -24,12 +35,6 @@ var mainState = {
 
         //每1.5秒產生一列pipe
         this.timer = game.time.events.loop(1500, this.addRowOfPipes, this);
-
-        //顯示分數
-        this.score = -1;
-        this.labelScore = game.add.text
-            (20, 20, "0", {font:"30px Arial", fill:"#000"});
-
     },
     update: function(){
         if(this.bird.inWorld == false)
@@ -45,11 +50,15 @@ var mainState = {
 
         this.bird.alive = false;
 
+        this.sound_lose.play();
+
         game.time.events.remove(this.timer);
 
         this.pipes.forEachAlive(function(p){
             p.body.velocity.x = 0;
         }, this);
+
+
     },
     jump: function(){
         if( this.bird.alive == false ) return;
@@ -83,6 +92,10 @@ var mainState = {
 
         this.score += 1;
         this.labelScore.text = this.score;
+
+        //播放音效
+        if(this.score > 0)
+            this.sound_pass.play();
     }
 };
 
