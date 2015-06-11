@@ -5,7 +5,7 @@ var mainState = {
     preload: function () {
         "use strict";
         game.load.image('bird', 'assets/smile.png');
-        game.load.image('pipe', 'assets/block.png', 50 , 50);
+        game.load.image('pipe', 'assets/block.png', 50, 50);
         game.load.image("cloud", "assets/cloud.png");
         game.load.image("background", "assets/background.png");
         game.load.audio('pass', 'assets/pass.mp3');
@@ -19,9 +19,15 @@ var mainState = {
 
         //顯示分數
         this.score = -1;
-        this.labelScore = game.add.text(180, 190, "0", {font: "100px Arial", fill: "#F25E5E"});
+        this.labelScore = game.add.text(180, 160, "0", {
+            font: "100px Arial Black",
+            fill: "#F25E5E"
+        });
 
-        this.bestScore = game.add.text(30, 20, "BEST : " + bestScore, {font: "30px Arial", fill: "#FFCC00"});
+        this.bestScore = game.add.text(30, 20, "BEST : " + bestScore, {
+            font: "30px Arial Black",
+            fill: "#FFCC00"
+        });
 
         //Sound
         this.sound_pass = game.add.audio('pass');
@@ -46,11 +52,13 @@ var mainState = {
 
         //每1.5秒產生一列pipe
         this.timer = game.time.events.loop(1500, this.addRowOfPipes, this);
-        
+
     },
     update: function () {
         "use strict";
-        if (this.bird.inWorld === false) { this.restartGame(); }
+        if (this.bird.inWorld === false) {
+            this.restartGame();
+        }
 
         if (this.isRunning) {
             game.time.events.resume();
@@ -58,11 +66,15 @@ var mainState = {
             game.physics.arcade.overlap(this.bird, this.pipes, this.hitPipe, null, this);
 
             game.physics.arcade.overlap(this.bird, this.emptyHoles, this.hitHole, null, this);
-        } else { game.time.events.pause(); }
+        } else {
+            game.time.events.pause();
+        }
     },
     hitPipe: function () {
         "use strict";
-        if (this.bird.alive === false) {return; }
+        if (this.bird.alive === false) {
+            return;
+        }
 
         this.bird.alive = false;
 
@@ -78,14 +90,18 @@ var mainState = {
     },
     jump: function () {
         "use strict";
-        if (this.bird.alive === false) {return; }
+        if (this.bird.alive === false) {
+            return;
+        }
 
         this.bird.body.velocity.y = -350;
         this.isRunning = true;
     },
     restartGame: function () {
         "use strict";
-        if (this.score > bestScore) {bestScore = this.score; }
+        if (this.score > bestScore) {
+            bestScore = this.score;
+        }
         game.state.start('main');
     },
     addOnePipe: function (x, y) {
@@ -105,7 +121,8 @@ var mainState = {
     addRowOfPipes: function () {
         "use strict";
         //隨機產生空洞
-        var hole = Math.floor(Math.random() * 5) + 1, i = 0;
+        var hole = Math.floor(Math.random() * 5) + 1,
+            i = 0;
         //加上其他六個pipe
         for (i = 0; i < 8; i += 1) {
             if (i !== hole && i !== hole + 1) {
@@ -116,7 +133,9 @@ var mainState = {
         this.labelScore.text = this.score;
 
         //播放音效
-        if (this.score > 0) {this.sound_pass.play(); }
+        if (this.score > 0) {
+            this.sound_pass.play();
+        }
     }
 };
 
